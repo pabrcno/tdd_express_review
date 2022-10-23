@@ -1,1 +1,1 @@
-export { UserPostMessages } from "./users/UsersResponses";
+export { UsersPostMessages } from "./users/UsersResponses";
