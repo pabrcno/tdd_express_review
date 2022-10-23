@@ -5,7 +5,7 @@
   "main": "./src/app.ts",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "build": "babel src --out-dir lib --copy-files --extensions '.ts,.js'",
     "test": "jest --watch"
   },
