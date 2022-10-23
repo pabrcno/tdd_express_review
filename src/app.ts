@@ -1,6 +1,9 @@
-const app = () => {
-  const init: string = "Hello World";
+import express from "express";
 
-  console.log(init);
+const app = async () => {
+  const init: string = "Hello World!";
+  const application = express();
+  application.listen(3000, () => console.log(init));
 };
+
 export default app;
