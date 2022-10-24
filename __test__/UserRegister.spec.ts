@@ -22,68 +22,57 @@ describe("User Registration", () => {
     password: "P4ssword",
   };
 
+  const postValidUser = async () => {
+    return await request(app).post(UsersEndpoints.POST).send(testUser);
+  };
+
   it("returns 200 OK when signup request is valid", (done) => {
-    request(app)
-      .post(UsersEndpoints.POST)
-      .send(testUser)
-      .then((response) => {
-        expect(response.statusCode).toBe(200);
-        done();
-      });
+    postValidUser().then((response) => {
+      expect(response.statusCode).toBe(200);
+      done();
+    });
   });
 
   it("returns success message when signup request is valid", (done) => {
-    request(app)
-      .post(UsersEndpoints.POST)
-      .send(testUser)
-      .then((response) => {
-        expect(response.body.message).toBe(UsersPostMessages.SUCCESS);
-        done();
-      });
+    postValidUser().then((response) => {
+      expect(response.body.message).toBe(UsersPostMessages.SUCCESS);
+      done();
+    });
   });
 
   it("saves the user  to database", (done) => {
-    request(app)
-      .post(UsersEndpoints.POST)
-      .send(testUser)
-      .then(() => {
-        User.findAll().then((users) => {
-          expect(users.length).toBe(1);
-          done();
-        });
+    postValidUser().then(() => {
+      User.findAll().then((users) => {
+        expect(users.length).toBe(1);
+        done();
       });
+    });
   });
 
   it("saves the username and email to database", (done) => {
-    request(app)
-      .post(UsersEndpoints.POST)
-      .send(testUser)
-      .then(() => {
-        User.findAll().then((users) => {
-          const [savedUser] = users;
-          const { username, email } = savedUser.get();
-          expect(username).toBe(testUser.username);
-          expect(email).toBe(testUser.email);
-          done();
-        });
+    postValidUser().then(() => {
+      User.findAll().then((users) => {
+        const [savedUser] = users;
+        const { username, email } = savedUser.get();
+        expect(username).toBe(testUser.username);
+        expect(email).toBe(testUser.email);
+        done();
       });
+    });
   });
 
   it("hashes password in db", (done) => {
-    request(app)
-      .post(UsersEndpoints.POST)
-      .send(testUser)
-      .then(() => {
-        User.findAll().then(async (users) => {
-          const [savedUser] = users;
-          const { password } = savedUser.get();
-          const isPasswordValid = await bcrypt.compare(
-            testUser.password,
-            password
-          );
-          expect(isPasswordValid).toBe(true);
-          done();
-        });
+    postValidUser().then(() => {
+      User.findAll().then(async (users) => {
+        const [savedUser] = users;
+        const { password } = savedUser.get();
+        const isPasswordValid = await bcrypt.compare(
+          testUser.password,
+          password
+        );
+        expect(isPasswordValid).toBe(true);
+        done();
       });
+    });
   });
 });
