@@ -5,6 +5,7 @@ import { UsersPostRequest } from "../src/domain/users/UsersRequests";
 import { UsersPostMessages } from "../src/constants";
 import User from "./../src/infrastructure/sequelize/User";
 import sequelize from "../src/infrastructure/sequelize";
+import bcrypt from "bcrypt";
 
 beforeAll(async () => {
   await sequelize.sync();
@@ -18,7 +19,7 @@ describe("User Registration", () => {
   const testUser: UsersPostRequest = {
     username: "user1",
     email: "user1@email.com",
-    password: "Password",
+    password: "P4ssword",
   };
 
   it("returns 200 OK when signup request is valid", (done) => {
@@ -63,6 +64,24 @@ describe("User Registration", () => {
           const { username, email } = savedUser.get();
           expect(username).toBe(testUser.username);
           expect(email).toBe(testUser.email);
+          done();
+        });
+      });
+  });
+
+  it("hashes password in db", (done) => {
+    request(app)
+      .post(UsersEndpoints.POST)
+      .send(testUser)
+      .then(() => {
+        User.findAll().then(async (users) => {
+          const [savedUser] = users;
+          const { password } = savedUser.get();
+          const isPasswordValid = await bcrypt.compare(
+            testUser.password,
+            password
+          );
+          expect(isPasswordValid).toBe(true);
           done();
         });
       });
