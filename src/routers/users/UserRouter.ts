@@ -7,13 +7,10 @@ import { UsersPostMessages } from "../../constants";
 const router = Router();
 
 router.post(UsersEndpoints.POST, async (req, res) => {
-  const { username, email, password } = req.body;
-  const hashed = await bcrypt.hash(password, 10);
-  await User.create({
-    username,
-    email,
-    password: hashed,
-  });
+  const hashed = await bcrypt.hash(req.body.password, 10);
+  const user = { ...req.body, password: hashed };
+
+  await User.create(user);
 
   return res.send({ message: UsersPostMessages.SUCCESS });
 });
